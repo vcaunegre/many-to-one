@@ -1,9 +1,6 @@
 package com.example.manytoone.controller;
 
-import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.NoSuchElementException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,72 +12,62 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.manytoone.exception.NoSuchElementFoundException;
 import com.example.manytoone.model.Owner;
-import com.example.manytoone.repository.OwnerRepository;
+import com.example.manytoone.service.OwnerService;
 
 @RestController
 @RequestMapping(path = "/api")
 public class OwnerController {
 
-    private OwnerRepository ownerRepository;
+    private OwnerService ownerService;
 
-    public OwnerController(OwnerRepository ownerRepository) {
-        this.ownerRepository = ownerRepository;
+    public OwnerController(OwnerService ownerService) {
+        this.ownerService = ownerService;
     }
 
     // Get all owners
     @GetMapping("/owners")
     public List<Owner> getAllOwners() {
-        return ownerRepository.findAll();
+        return ownerService.getAllOwners();
     }
 
     // Get an owner by Id
     @GetMapping("/owners/{id}")
     public Owner getOwner(@PathVariable(name = "id") long id) {
-        return ownerRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementFoundException("Owner not found for id " + id));
-
+        return ownerService.getOwner(id);
     }
 
     // Get by name
     @GetMapping("/ownerName/{name}")
     public List<Owner> getOwnerByName(@PathVariable(name = "name") String name) {
-        return ownerRepository.findByName(name)
-                .orElseThrow(() -> new NoSuchElementException("Nothing found for name " + name));
+        return ownerService.getOwnerByName(name);
     }
 
     // Create an owner
     @PostMapping("/owners")
-    public ResponseEntity<Owner> createOwner(@RequestBody Owner owner) {
-        Owner savedOwner = ownerRepository.save(owner);
-        return new ResponseEntity<>(savedOwner, HttpStatus.OK);
+    public ResponseEntity<?> createOwner(@RequestBody Owner owner) {
+        ownerService.createOwner(owner);
+        return new ResponseEntity<>("Owner created", HttpStatus.OK);
     }
 
     // Edit an owner
     @PutMapping("/owners/{id}")
-    public Owner editOwner(@PathVariable(name = "id") long id, @RequestBody Owner owner) {
-        Owner actualOwner = ownerRepository.findById(id).orElseThrow(() -> new RuntimeException("Owner not found"));
-        actualOwner.setName(owner.getName());
-        actualOwner.setAge(owner.getAge());
-        actualOwner.setGender(owner.getGender());
-        return ownerRepository.save(actualOwner);
+    public ResponseEntity<?> editOwner(@PathVariable(name = "id") long id, @RequestBody Owner owner) {
+        ownerService.editOwner(id, owner);
+        return new ResponseEntity<>("Owner edited successfully", HttpStatus.OK);
     }
 
     // delete an owner
     @DeleteMapping("/owners/{id}")
-    public HttpStatus deleteOwner(@PathVariable(name = "id") long id) {
-        if (!ownerRepository.existsById(id)) {
-            throw new NoSuchElementFoundException("Owner doesn't exist for id " + id);
-        }
-        ownerRepository.deleteById(id);
-        return HttpStatus.OK;
+    public ResponseEntity<?> deleteOwner(@PathVariable(name = "id") long id) {
+        ownerService.deleteOwner(id);
+        return new ResponseEntity<>("Owner deleted successfully", HttpStatus.OK);
     }
 
     // *optionnal* delete all owners
     @DeleteMapping("/owners")
     public HttpStatus deleteAllOwners() {
-        ownerRepository.deleteAll();
+        ownerService.deleteAllOwner();
         return HttpStatus.OK;
     }
 
