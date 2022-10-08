@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.manytoone.exception.NoSuchElementFoundException;
 import com.example.manytoone.model.Owner;
 import com.example.manytoone.service.OwnerService;
 
@@ -34,7 +35,8 @@ public class OwnerController {
     // Get an owner by Id
     @GetMapping("/owners/{id}")
     public Owner getOwner(@PathVariable(name = "id") long id) {
-        return ownerService.getOwner(id);
+        return ownerService.findOwnerById(id)
+                .orElseThrow(() -> new NoSuchElementFoundException("No owners found for this id"));
     }
 
     // Get by name

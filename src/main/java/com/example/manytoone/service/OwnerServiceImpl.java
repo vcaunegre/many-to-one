@@ -1,6 +1,7 @@
 package com.example.manytoone.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,8 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public Owner getOwner(long id) {
-        return ownerRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementFoundException("Owner not found for id " + id));
+    public Optional<Owner> findOwnerById(long id) {
+        return ownerRepository.findById(id);
 
     }
 
@@ -36,8 +36,8 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public void createOwner(Owner owner) {
-        ownerRepository.save(owner);
+    public Owner createOwner(Owner owner) {
+        return ownerRepository.save(owner);
 
     }
 

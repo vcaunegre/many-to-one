@@ -16,6 +16,22 @@ public class Owner {
     private int age;
     private char gender;
 
+    public Owner(long id, String name, int age, char gender) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+    }
+
+    public Owner(String name, int age, char gender) {
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+    }
+
+    public Owner() {
+    }
+
     public long getId() {
         return this.id;
     }
